@@ -1,0 +1,21 @@
+version: '3'
+services:
+  main:
+    build:
+        context: .
+        args:
+            - http_proxy
+            - https_proxy
+            - no_proxy
+    image: cubeearth/k8s-cert-server
+    environment:
+    - POD_NAMESPACE=default
+    - SVC_NAME=pod-cert-server
+    - CONFIGMAP_NAME=pod-cert-server
+    volumes:
+#    - ./kube:/root/.kube:ro
+    - ./kube:/var/www/.kube:ro
+#    - ./cgi:/var/www/localhost/cgi-bin
+    ports:
+    - 8088:8080
+    - 8443:8443

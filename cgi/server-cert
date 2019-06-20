@@ -1,0 +1,31 @@
+#!/bin/bash
+
+. `dirname $0`/functions.inc
+
+function handleRequest {
+	local token
+	local certName
+	
+	[[ "${HTTPS-}" != "on" ]] && echo "Status: 500 SSL needed" && return 1
+
+	ensureToken
+	
+	params=`echo "$REQUEST_URI" | awk -F/ 'function check(s) { if(!match(s, /^[a-zA-Z0-9\-_ ]*$/)) { printf "err=\"invalid URL param !\"\n", s; exit 1 }; return s } { printf "token=%s\ncertName=%s\n", check($3), check($4) }' || err=$?`
+	eval $params
+
+	[[ ! -z "${err-}" ]] && echo "Status: 500 $err" && return 1
+	
+	[[ "$TOKEN" != "$token" ]] && echo "Status: 500 Invalid token" && return 1
+	
+	if [[ "$certName" = "root-ca" ]]
+	then
+		ensureRootCA
+	else
+		ensureRootCA
+		ensureServerCert "$certName"
+	fi
+	
+	sendResponse	
+}
+
+handleRequest

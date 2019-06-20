@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. `dirname $0`/functions.inc
+
+function handleRequest {
+	ensureRootCA
+	sendResponse	
+}
+
+handleRequest
