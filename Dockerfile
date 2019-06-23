@@ -1,6 +1,6 @@
 FROM alpine
 
-RUN apk --no-cache add apache2 apache2-ssl curl bash openssl && \
+RUN apk --no-cache add apache2 apache2-ssl curl bash openssl jq && \
 	mkdir -p /run/apache2 /certs && \
 	chown apache:apache /run/apache2 /certs
 	
