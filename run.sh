@@ -6,13 +6,9 @@ function start {
 	
 	export KUBECONFIG="/var/www/.kube/config"
 	
-	ensureToken
-	ensureRootCA
-	ensureServerCert "$SVC_NAME"
+	ensureLocalServerCert "$SVC_NAME"
 	
 	mkdir -p /etc/apache2/certs
-	cp /certs/k8s-$SVC_NAME.key /etc/apache2/certs/server.key
-	cp /certs/k8s-$SVC_NAME.cer /etc/apache2/certs/server.cer
 	
 	chmod -R 700 /etc/apache2/certs
 	

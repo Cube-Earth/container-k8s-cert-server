@@ -99,7 +99,7 @@ function ensureRootCA {
 	LCK="$CERTS_DIR/_root_.lck"
 	touch $LCK
 	exec 200>"$LCK"
-	flock -n 200 >> $LOG 2>&1
+	flock 200 >> $LOG 2>&1
 	
 	if [[ ! -f "$CER_FILE" ]]
 	then
@@ -161,6 +161,16 @@ function ensureAuthCert {
 	cp "$CER_FILE" "$TARGET_POD_DIR/$POD_NAME-$CERT_KEY.cer"
 }
 
+function ensureLocalServerCert {
+	ensureRootCA
+	
+	local POD_NAME="local"
+	local CERT_DNS="$1"
+	local CERT_KEY="${2-server}"
+	local POD_DIR="$CERTS_DIR/_local_"
+	ensureServerCert
+}
+
 function sendResponse {
 	echo "Status: 200 OK"
 	echo "Content-Length: `stat -c %s "$FILE"`"
@@ -184,7 +194,7 @@ function createCerts {
 	LCK="$CERTS_DIR/$POD_NAME.lck"
 	touch $LCK
 	exec 200>"$LCK"
-	flock -n 200 >> $LOG 2>&1
+	flock 200 >> $LOG 2>&1
 	
 	[[ -f "$TGZ" ]] && return 0
 	
