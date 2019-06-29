@@ -3,7 +3,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 LOG=/tmp/certs.log
 CERTS_DIR=/certs
@@ -110,6 +109,8 @@ function ensureRootCA {
 	CA_CER_FILE=$CER_FILE
 	CA_KEY_FILE=$KEY_FILE
 	FILE=$CER_FILE
+
+	exec 200>&-
 }
 
 
@@ -184,7 +185,7 @@ function createCerts {
 	ensureRootCA
 	
 	declare -A POD_ANNOTS
-	findPodData
+	findPodData >> $LOG 2>&1
 	POD_DIR="$CERTS_DIR/$POD_NAME"
 	
 	# TODO: how to handle StateFulSets?? (due to dynamic numbering ? --> POD_NAME, TGZ, DNS, etc.) --> use wildcard in DNS

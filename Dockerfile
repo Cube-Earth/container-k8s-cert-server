@@ -13,6 +13,6 @@ COPY run.sh /usr/local/bin/
 COPY cgi/* /var/www/localhost/cgi-bin/
 ADD https://raw.githubusercontent.com/Cube-Earth/Scripts/master/shell/docker/term_safe_start.inc /usr/local/bin/
 
-EXPOSE 8080 8443
+EXPOSE 80 443
 
 ENTRYPOINT [ "/usr/local/bin/run.sh" ]
