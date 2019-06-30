@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-cert-client-alpine
+  labels:
+    app: pod-cert-client-alpine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-cert-client-alpine
+  template:
+    metadata:
+      labels:
+        app: pod-cert-client-alpine
+    spec:
+      containers:
+      - name: pod-cert-client-alpine
+        image: alpine
+        command: [ "tail", "-f", "/dev/null" ]

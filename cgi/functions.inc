@@ -138,7 +138,7 @@ function createServerCert {
 		    
 	openssl req -in "$csr" -noout -text
 		
-	openssl x509 -req -in "$csr" -CA "$CA_CER_FILE" -CAkey "$CA_KEY_FILE" -CAcreateserial -out "$CER_FILE" -days 500 -sha256
+	openssl x509 -req -in "$csr" -extensions SAN -CA "$CA_CER_FILE" -CAkey "$CA_KEY_FILE" -CAcreateserial -out "$CER_FILE" -days 500 -sha256
 	
 	rm "$csr"
 		
