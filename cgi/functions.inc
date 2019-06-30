@@ -94,20 +94,26 @@ function ensureRootCA {
 
 	CER_FILE="$POD_DIR/$CERT_KEY.cer"
 	KEY_FILE="$POD_DIR/$CERT_KEY.key"
+	TGZ_FILE="$POD_DIR/$CERT_KEY.tgz"
 	
 	LCK="$CERTS_DIR/_root_.lck"
 	touch $LCK
 	exec 200>"$LCK"
 	flock 200 >> $LOG 2>&1
 	
-	if [[ ! -f "$CER_FILE" ]]
+	if [[ ! -f "$TGZ_FILE" ]]
 	then
 		ensurePrivCert "createRootCA" >> $LOG 2>&1
+		
+		pushd "$POD_DIR" >> $LOG 2>&1
+		tar fcz "$TGZ_FILE" *.cer >> $LOG 2>&1
+		popd >> $LOG 2>&1
 	fi
 	
 	POD_NAMESPACE=$old_ns
 	CA_CER_FILE=$CER_FILE
 	CA_KEY_FILE=$KEY_FILE
+	CA_TGZ_FILE=$TGZ_FILE
 	FILE=$CER_FILE
 
 	exec 200>&-
@@ -138,7 +144,10 @@ function createServerCert {
 		    
 	openssl req -in "$csr" -noout -text
 		
-	openssl x509 -req -in "$csr" -extensions SAN -CA "$CA_CER_FILE" -CAkey "$CA_KEY_FILE" -CAcreateserial -out "$CER_FILE" -days 500 -sha256
+	openssl x509 -req -in "$csr" -extensions SAN \
+	    -extfile <(cat /etc/ssl/openssl.cnf \
+               <(printf "\n[SAN]\nsubjectAltName=$dns")) \
+        -CA "$CA_CER_FILE" -CAkey "$CA_KEY_FILE" -CAcreateserial -out "$CER_FILE" -days 500 -sha256
 	
 	rm "$csr"
 		
@@ -191,6 +200,7 @@ function createCerts {
 	# TODO: how to handle StateFulSets?? (due to dynamic numbering ? --> POD_NAME, TGZ, DNS, etc.) --> use wildcard in DNS
 	
 	TGZ="$CERTS_DIR/$POD_NAME.tgz"
+	FILE="$TGZ"
 	
 	LCK="$CERTS_DIR/$POD_NAME.lck"
 	touch $LCK
@@ -207,13 +217,10 @@ function createCerts {
 		then
 			IFS=':' read -r -a CERT_PARAMS <<< "${POD_ANNOTS[$key]}"
 			CERT_TYPE=${CERT_PARAMS[0]-undefined}
-			echo "CERT_PARAMS[1] = ${CERT_PARAMS[1]-}"
 			IFS=',' read -r -a CERT_DNS <<< "${CERT_PARAMS[1]-$POD_NAME}"
 			
 			case "$CERT_TYPE" in
 				server)
-#					POD_NAME=$CERT_KEY
-#					CERT_KEY=
 					ensureServerCert
 					n=$((n+1))
 					;;
@@ -226,29 +233,17 @@ function createCerts {
 			esac
 		fi
 	done
-
-	[[ "$n" -eq 0 ]] && echo "Status: 500 Missing annotation 'ssl-cert.*' to configure certificate creations!" && return 1
+	
+#	[[ "$n" -eq 0 ]] && echo "Status: 500 Missing annotation 'ssl-cert.*' to configure certificate creations!" && return 1
+#	[[ "$n" -eq 0 ]] && FILE="$CA_TGZ_FILE" && return 0
 	
 	cp "$CA_CER_FILE" "$POD_DIR"
 	
-	pushd "$POD_DIR"
-	tar fcz "$TGZ" *
-	popd
+	pushd "$POD_DIR" >> $LOG 2>&1
+	tar fcz "$TGZ" * >> $LOG 2>&1
+	popd >> $LOG 2>&1
 	
 	rm -Rf "$POD_DIR"
 	
 	FILE=$TGZ
 }
-
-#REMOTE_ADDR='10.244.0.9'
-#POD_NAMESPACE='default'
-#declare -A POD_ANNOTS
-#OWNER_KIND=""
-#OWNER_NAME=""
-#DEPLOYMENT_NAME=""
-
-#JSON=a
-
-#createCerts
-
-##findPodData

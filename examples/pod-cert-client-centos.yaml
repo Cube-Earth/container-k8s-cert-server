@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pod-cert-client-alpine
+  name: pod-cert-client-centos
   labels:
-    app: pod-cert-client-alpine
+    app: pod-cert-client-centos
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pod-cert-client-alpine
+      app: pod-cert-client-centos
   template:
     metadata:
       annotations:
@@ -16,11 +16,11 @@ spec:
         ssl-cert.default : "server:cert-test2"
         ssl-cert.tiller.default: "shared"
       labels:
-        app: pod-cert-client-alpine
+        app: pod-cert-client-centos
     spec:
       containers:
-      - name: pod-cert-client-alpine
-        image: alpine
+      - name: pod-cert-client-centos
+        image: centos
         env:
         - name: SCRIPT
           value: |
@@ -39,3 +39,4 @@ spec:
 
         command: [ "/bin/sh" ]
         args: [ "-c" , "$(SCRIPT)" ]
+        

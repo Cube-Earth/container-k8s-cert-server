@@ -1,34 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pod-cert-client-alpine
+  name: pod-cert-client-ubuntu
   labels:
-    app: pod-cert-client-alpine
+    app: pod-cert-client-ubuntu
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pod-cert-client-alpine
+      app: pod-cert-client-ubuntu
   template:
     metadata:
-      annotations:
-        ssl-cert.server  : "server:cert-test,test-*.test"
-        ssl-cert.default : "server:cert-test2"
-        ssl-cert.tiller.default: "shared"
       labels:
-        app: pod-cert-client-alpine
+        app: pod-cert-client-ubuntu
     spec:
       containers:
-      - name: pod-cert-client-alpine
-        image: alpine
+      - name: pod-cert-client-ubuntu
+        image: ubuntu
         env:
         - name: SCRIPT
           value: |
-            #!/bin/sh
+            #!/bin/bash
             set +o errexit
             set +o nounset
             set +o pipefail
-            
+                        
             curl -Ls https://raw.githubusercontent.com/Cube-Earth/container-k8s-cert-server/master/pod-scripts/update-certs.sh | /bin/sh
             
             update_certs.sh
@@ -37,5 +33,6 @@ spec:
             
             tail -f /dev/null
 
-        command: [ "/bin/sh" ]
+        command: [ "/bin/bash" ]
         args: [ "-c" , "$(SCRIPT)" ]
+        

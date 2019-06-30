@@ -11,9 +11,12 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
-  verbs: ["get", "create", "list"]
+  verbs: ["get", "create"]
+- apiGroups: ["extensions"]
+  resources: ["replicasets", "deployments"]
+  verbs: ["get", "list"]
 - apiGroups: [""]
-  resources: ["pods", "services", "deployments"]
+  resources: ["pods", "services"]
   verbs: ["get", "list"]
 
 ---
@@ -25,7 +28,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
-  verbs: ["get", "create", "list"]
+  verbs: ["get", "create"]
 ---
 
 kind: RoleBinding
@@ -75,7 +78,7 @@ spec:
       serviceAccountName: pod-cert-server
       containers:
       - name: k8s-pod-cert-server
-        image: cubeearth/k8s-cert-server
+        image: cubeearth/k8s-cert-server:latest
         ports:
         - containerPort: 80
         - containerPort: 443
