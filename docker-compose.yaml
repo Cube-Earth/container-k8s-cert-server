@@ -11,7 +11,6 @@ services:
     environment:
     - POD_NAMESPACE=default
     - SVC_NAME=pod-cert-server
-    - CONFIGMAP_NAME=pod-cert-server
     volumes:
 #    - ./kube:/root/.kube:ro
     - ./kube:/var/www/.kube:ro

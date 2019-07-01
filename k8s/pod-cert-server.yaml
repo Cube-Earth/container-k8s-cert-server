@@ -87,7 +87,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        command: [ "tail", "-f", "/dev/null" ]
         
 ---   
 apiVersion: v1
