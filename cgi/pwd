@@ -1,0 +1,29 @@
+#!/bin/bash
+
+. `dirname $0`/functions.inc
+
+function handleRequest {	
+#	[[ "${HTTPS-}" != "on" ]] && echo "Status: 500 SSL needed" && return 1
+
+	export REMOTE_ADDR="10.244.0.28"
+
+	declare -A POD_ANNOTS
+	findPodData >> $LOG 2>&1
+	
+	a=${PATH_INFO:1}
+	scope=${a/=*/}
+	alias=${a/*=/}
+
+	pwd_shared=",${POD_ANNOTS['pwd.shared']-},"
+	[[ "$pwd_shared" == *",$scope,"* ]] && domain_scope="shared" || domain_scope="$POD_NAME"
+	[[ "$pwd_shared" == *",${alias-},"* ]] && domain_alias="shared" || domain_alias="$POD_NAME"
+
+	pwd=`createPwd "$scope" "$domain_scope" "${alias-}" "$domain_alias"`
+
+	echo "Status: 200 Ok"
+	echo "Content-Type: text/plain"
+	echo
+	echo "$pwd"
+}
+
+handleRequest

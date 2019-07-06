@@ -15,6 +15,7 @@ spec:
         ssl-cert.server  : "server:cert-test,test-*.test"
         ssl-cert.default : "server:cert-test2"
         ssl-cert.tiller.default: "shared"
+        pwd.shared: "spinnaker"
       labels:
         app: pod-cert-client-alpine
     spec:
@@ -34,6 +35,9 @@ spec:
             update_certs.sh
             
             ls -l /certs
+            
+            curl https://pod-cert-server/pwd/a
+            curl https://pod-cert-server/pwd/spinnaker
             
             tail -f /dev/null
 

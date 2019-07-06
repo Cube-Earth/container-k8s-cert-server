@@ -6,7 +6,26 @@ set -o pipefail
 
 LOG=/tmp/certs.log
 CERTS_DIR=/certs
-PREFIX=tls-managed
+PREFIX=managed-tls
+PREFIX_PWD=managed-pwd
+
+
+function createPwd {
+	local scope="$1"
+	local domain_scope="$2"
+	local pwd=`kubectl get secret "$PREFIX_PWD-$domain_scope---$scope" -n "$POD_NAMESPACE" -o jsonpath='{.data.pwd}' 2>>$LOG | base64 -d`
+	if [[ -z "${pwd-}" ]]
+	then
+		if [[ ! -z "${3-}" ]]
+		then
+			pwd=`createPwd "$3" "$4"`
+		else
+			pwd=`openssl rand -hex 32`
+		fi
+		kubectl create secret generic "$PREFIX_PWD-$domain_scope---$scope" -n "$POD_NAMESPACE" --from-literal=user=$scope --from-literal=pwd=$pwd >>$LOG 2>&1
+	fi
+	echo "$pwd"
+}
 
 function createToken {
 	openssl rand -hex 12
