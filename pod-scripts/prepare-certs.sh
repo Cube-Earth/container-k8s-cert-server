@@ -23,8 +23,7 @@ case "$os" in
 		;;
 esac
 
-mkdir -p /usr/local/bin/startup
-wget -P /usr/local/bin/startup https://raw.githubusercontent.com/Cube-Earth/container-k8s-cert-server/master/pod-scripts/update-certs.sh
+wget -P /usr/local/bin https://raw.githubusercontent.com/Cube-Earth/container-k8s-cert-server/master/pod-scripts/update-certs.sh
 chmod +x /usr/local/bin/update-certs.sh
 
 mkdir /certs
