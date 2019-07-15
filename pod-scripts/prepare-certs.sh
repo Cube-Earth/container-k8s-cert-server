@@ -1,12 +1,9 @@
-#!/bin/bash
-
-set -o errexit
-set -o nounset
-set -o pipefail
+#!/bin/lsh
 
 os=$(cat /etc/os-release | awk '/^ID=/ { sub(/^ID=/, ""); print $0 }')
 
 case "$os" in
+	debian)
 	ubuntu)
 		apt-get update
 		apt-get install -y curl wget openssl
@@ -23,7 +20,7 @@ case "$os" in
 		;;
 esac
 
-wget -P /usr/local/bin https://raw.githubusercontent.com/Cube-Earth/container-k8s-cert-server/master/pod-scripts/update-certs.sh
+$DOWNLOAD https://raw.githubusercontent.com/Cube-Earth/container-k8s-cert-server/master/pod-scripts/update-certs.sh > /usr/local/bin/update-certs.sh
 chmod +x /usr/local/bin/update-certs.sh
 
 mkdir /certs

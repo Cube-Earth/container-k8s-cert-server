@@ -1,23 +1,24 @@
 #!/bin/lsh
 
-[[ $(ls -1A /certs | wc -l) -ne 0 ]] && echo "/certs already initialized." && exit 0
+[ $(ls -1A /certs | wc -l) -ne 0 ] && echo "/certs already initialized." && exit 0
 
 os=$(cat /etc/os-release | awk '/^ID=/ { sub(/^ID=/, ""); print $0 }')
 
 case "$os" in
+	debian)
 	ubuntu)
-		wget -qO /usr/local/share/ca-certificates/k8s-root-ca.crt http://pod-cert-server/root-ca
+		$DOWNLOAD http://pod-cert-server/root-ca > /usr/local/share/ca-certificates/k8s-root-ca.crt
 		update-ca-certificates
 		;;
 
 	centos)
 		update-ca-trust force-enable
-		wget -qO /etc/pki/ca-trust/source/anchors/k8s-root-ca.crt http://pod-cert-server/root-ca
+		$DOWNLOAD http://pod-cert-server/root-ca > /etc/pki/ca-trust/source/anchors/k8s-root-ca.crt
 		update-ca-trust extract
 		;;
 
 	alpine)
-		wget -qO /usr/local/share/ca-certificates/k8s-root-ca.crt http://pod-cert-server/root-ca
+		$DOWNLOAD http://pod-cert-server/root-ca > /usr/local/share/ca-certificates/k8s-root-ca.crt
 		update-ca-certificates
 		;;
 esac
@@ -26,5 +27,5 @@ esac
 #wget -qO- https://pod-cert-server/hello
 #curl https://pod-cert-server/hello
 	
-curl -Ls https://pod-cert-server/certs | tar xz -oC /certs
+$DOWNLOAD https://pod-cert-server/certs | tar xz -oC /certs
 chmod -R 755 /certs
