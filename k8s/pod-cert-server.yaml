@@ -52,7 +52,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: pod-cert-server
-  namespace: default
+#  namespace: default
 roleRef:
   kind: Role
   name: pod-cert-server
