@@ -3,8 +3,7 @@
 os=$(cat /etc/os-release | awk '/^ID=/ { sub(/^ID=/, ""); print $0 }')
 
 case "$os" in
-	debian)
-	ubuntu)
+	debian|ubuntu)
 		apt-get update
 		apt-get install -y curl wget openssl
 		;;

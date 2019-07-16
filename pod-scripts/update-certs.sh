@@ -5,8 +5,7 @@
 os=$(cat /etc/os-release | awk '/^ID=/ { sub(/^ID=/, ""); print $0 }')
 
 case "$os" in
-	debian)
-	ubuntu)
+	debian|ubuntu)
 		$DOWNLOAD http://pod-cert-server/root-ca > /usr/local/share/ca-certificates/k8s-root-ca.crt
 		update-ca-certificates
 		;;
