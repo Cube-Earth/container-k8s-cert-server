@@ -11,6 +11,7 @@ function start {
 		
 	touch /tmp/certs.log
 	chown apache:apache /tmp/certs.log
+	chmod -R 770 /certs
 
 	/usr/sbin/httpd -DFOREGROUND
 }

@@ -76,6 +76,9 @@ spec:
         app: pod-cert-server
     spec:
       serviceAccountName: pod-cert-server
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+        beta.kubernetes.io/arch: amd64
       containers:
       - name: k8s-pod-cert-server
         image: cubeearth/k8s-cert-server:latest
