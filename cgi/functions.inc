@@ -60,6 +60,9 @@ function findDeploymentName {
 		Deployment)
 			DEPLOYMENT_NAME=$OWNER_NAME
 			;;
+		Job)
+			DEPLOYMENT_NAME=$OWNER_NAME
+			;;
 	esac
 }
 
@@ -75,7 +78,7 @@ function findPodData {
 	DEPLOYMENT_NAME=""
 	eval `echo $json | jq -r '.ownerReferences | select (.!=null) | .[] | "OWNER_KIND=\"\(.kind)\"\nOWNER_NAME=\"\(.name)\""'`
 	findDeploymentName
-	[[ -z "${DEPLOYMENT_NAME-}" ]] && echo "ERROR: Pod must be part of a Deployment!" && return 1
+	[[ -z "${DEPLOYMENT_NAME-}" ]] && echo "ERROR: Pod must be part of a Deployment or Job!" && return 1
 	POD_NAME=$DEPLOYMENT_NAME
 }
 
