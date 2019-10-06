@@ -44,6 +44,13 @@ function uploadTls {
 }
 
 function findDeploymentName {
+	case "$OWNER_KIND" in
+		Deployment|Job)
+			DEPLOYMENT_NAME=$OWNER_NAME
+			return 0
+			;;
+	esac
+
 	local json=$(kubectl get -n "$POD_NAMESPACE" --output json "$OWNER_KIND" "$OWNER_NAME" 2>> $LOG | jq '.metadata' 2>> $LOG)
 	[[ $? -ne 0 ]] && return 1
 
@@ -52,15 +59,7 @@ function findDeploymentName {
 	eval `echo $json | jq -r '.ownerReferences | select (.!=null) | .[] | "OWNER_KIND=\"\(.kind)\"\nOWNER_NAME=\"\(.name)\""'`
 	
 	[[ -z "${OWNER_KIND-}" ]] && return 0
-	
-	case "$OWNER_KIND" in
-		ReplicaSet)
-			findDeploymentName
-			;;
-		Deployment)
-			DEPLOYMENT_NAME=$OWNER_NAME
-			;;
-	esac
+	findDeploymentName	
 }
 
 function findPodData {
@@ -75,7 +74,7 @@ function findPodData {
 	DEPLOYMENT_NAME=""
 	eval `echo $json | jq -r '.ownerReferences | select (.!=null) | .[] | "OWNER_KIND=\"\(.kind)\"\nOWNER_NAME=\"\(.name)\""'`
 	findDeploymentName
-	[[ -z "${DEPLOYMENT_NAME-}" ]] && echo "ERROR: Pod must be part of a Deployment!" && return 1
+	[[ -z "${DEPLOYMENT_NAME-}" ]] && echo "ERROR: Pod must be part of a Deployment or Job!" && return 1
 	POD_NAME=$DEPLOYMENT_NAME
 }
 

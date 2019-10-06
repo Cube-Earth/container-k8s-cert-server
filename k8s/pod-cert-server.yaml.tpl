@@ -18,6 +18,9 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "services"]
   verbs: ["get", "list"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list"]
 
 ---
 kind: Role
