@@ -2,7 +2,7 @@
 
 [ $(ls -1A /certs | wc -l) -ne 0 ] && echo "/certs already initialized." && exit 0
 
-os=$(cat /etc/os-release | awk '/^ID=/ { sub(/^ID=/, ""); print $0 }')
+os=$(cat /etc/os-release | awk '/^ID=/ { sub(/^ID=/, ""); sub(/^"/, ""); sub(/"$/, ""); print $0 }')
 
 case "$os" in
 	debian|ubuntu)
