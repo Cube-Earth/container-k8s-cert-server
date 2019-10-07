@@ -13,6 +13,9 @@ PREFIX_PWD=managed-pwd
 function createPwd {
 	local scope="$1"
 	local domain_scope="$2"
+	
+	scope=$(echo "$scope" | tr '[:upper:]' '[:lower:]')
+	
 	local pwd=`kubectl get secret "$PREFIX_PWD-$domain_scope---$scope" -n "$POD_NAMESPACE" -o jsonpath='{.data.pwd}' 2>>$LOG | base64 -d`
 	if [[ -z "${pwd-}" ]]
 	then
@@ -254,6 +257,8 @@ function createCerts {
 	
 #	[[ "$n" -eq 0 ]] && echo "Status: 500 Missing annotation 'ssl-cert.*' to configure certificate creations!" && return 1
 #	[[ "$n" -eq 0 ]] && FILE="$CA_TGZ_FILE" && return 0
+	
+	[[ ! -d "$POD_DIR" ]] && mkdir -p "$POD_DIR"
 	
 	cp "$CA_CER_FILE" "$POD_DIR"
 	
